@@ -1,0 +1,22 @@
+{
+  "name": "pixi-lighting",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "browserify -t babelify -t brfs --debug src/main.js > build.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-preset-urban": "^0.3.0",
+    "babelify": "^7.2.0",
+    "brfs": "^1.4.1",
+    "browserify": "^12.0.1"
+  },
+  "dependencies": {
+    "mathutil": "^0.2.0",
+    "pixi.js": "^3.0.8"
+  }
+}
