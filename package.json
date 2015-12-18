@@ -19,6 +19,7 @@
   "dependencies": {
     "mathutil": "^0.2.0",
     "pixi.js": "^3.0.8",
+    "quay": "^0.3.0",
     "stats.js": "mrdoob/stats.js"
   }
 }

@@ -2,6 +2,8 @@
 import PIXI from 'pixi.js'
 import Stats from 'stats.js'
 import { Vector2 } from 'mathutil'
+import Quay from 'quay'
+
 import Poly from './poly'
 import Light from './light'
 import ShadowMap from './shadowMap'
@@ -14,6 +16,8 @@ stats.domElement.style.position = 'absolute';
 stats.domElement.style.right = '0px';
 stats.domElement.style.top = '0px';
 document.body.appendChild( stats.domElement )
+
+var quay = new Quay()
 
 var renderer = PIXI.autoDetectRenderer( WIDTH, HEIGHT, {
   antialias: true
@@ -41,7 +45,7 @@ function init() {
 
   // render shadows first for now
   stage.addChild( shadow.view )
-  
+
   stage.addChild( poly )
   stage.addChild( light.view )
 
@@ -50,6 +54,29 @@ function init() {
   shadow.render()
 
   render()
+
+  // Apply handlers
+  quay.on( '<left>', () => {
+    poly.translate( new Vector2( -1, 0 ) )
+    shadow.render()
+  })
+  quay.on( '<right>', () => {
+    poly.translate( new Vector2( 1, 0 ) )
+    shadow.render()
+  })
+  quay.on( '<up>', () => {
+    poly.translate( new Vector2( 0, -1 ) )
+    shadow.render()
+  })
+  quay.on( '<down>', () => {
+    poly.translate( new Vector2( 0, 1 ) )
+    shadow.render()
+  })
+
+  // expose debug globals
+  window.shape = poly
+  window.light = light
+  window.shadow = shadow
 }
 
 function render() {
