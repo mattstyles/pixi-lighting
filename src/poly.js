@@ -24,6 +24,28 @@ export default class Poly extends PIXI.Graphics {
     this.render()
   }
 
+  // assumes a square, to be quick
+  to( center ) {
+    var width2 = this.width / 2
+    var height2 = this.height / 2
+
+    this.points = [
+      new Vector2( center.x - width2, center.y - height2 ),
+      new Vector2( center.x + width2, center.y - height2 ),
+      new Vector2( center.x + width2, center.y + height2 ),
+      new Vector2( center.x - width2, center.y + height2 )
+    ]
+    this.render()
+  }
+
+  // assume rect
+  get width() {
+    return this.points[ 1 ].x - this.points[ 0 ].x
+  }
+  get height() {
+    return this.points[ 2 ].y - this.points[ 1 ].y
+  }
+
   /**
    * Returns only those points which provide a bounding box
    */
@@ -45,8 +67,8 @@ export default class Poly extends PIXI.Graphics {
       var normal = aToB.backfaceNormal()
       if ( normal.dot( originA ) < 0 ) {
         // This will produce duplicates with an array, so use a set to avoid
-        visible.add( b )
         visible.add( a )
+        visible.add( b )
       }
       a = b
     }
@@ -62,7 +84,7 @@ export default class Poly extends PIXI.Graphics {
     var height = this.points[ 2 ].y - this.points[ 1 ].y
 
     this.clear()
-    this.beginFill( 0xe1e4f0 )
+    this.beginFill( 0xe1e4f0, .2 )
     this.drawRect( this.points[ 0 ].x, this.points[ 0 ].y, width, height )
     this.endFill()
   }

@@ -10,6 +10,7 @@ import ShadowMap from './shadowMap'
 
 const WIDTH = 256
 const HEIGHT = 256
+const MOVE_SPEED = 2
 
 var stats = new Stats()
 stats.domElement.style.position = 'absolute';
@@ -25,6 +26,10 @@ var renderer = PIXI.autoDetectRenderer( WIDTH, HEIGHT, {
 renderer.backgroundColor = 0x434343
 window.renderer = renderer
 document.body.appendChild( renderer.view )
+
+renderer.view.addEventListener( 'click', event => {
+  console.log( event.clientX, event.clientY )
+})
 
 var stage = new PIXI.Container()
 
@@ -57,19 +62,25 @@ function init() {
 
   // Apply handlers
   quay.on( '<left>', () => {
-    poly.translate( new Vector2( -1, 0 ) )
+    poly.translate( new Vector2( -MOVE_SPEED, 0 ) )
     shadow.render()
   })
   quay.on( '<right>', () => {
-    poly.translate( new Vector2( 1, 0 ) )
+    poly.translate( new Vector2( MOVE_SPEED, 0 ) )
     shadow.render()
   })
   quay.on( '<up>', () => {
-    poly.translate( new Vector2( 0, -1 ) )
+    poly.translate( new Vector2( 0, -MOVE_SPEED ) )
     shadow.render()
   })
   quay.on( '<down>', () => {
-    poly.translate( new Vector2( 0, 1 ) )
+    poly.translate( new Vector2( 0, MOVE_SPEED ) )
+    shadow.render()
+  })
+
+  // Add mousemove to shape
+  renderer.view.addEventListener( 'mousemove', event => {
+    poly.to( new Vector2( event.clientX, event.clientY ) )
     shadow.render()
   })
 

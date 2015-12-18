@@ -5,6 +5,7 @@ import { Vector2 } from 'mathutil'
 export default class Light {
   constructor( x, y ) {
     this.pos = new Vector2( x, y )
+    this.distance = 300
 
     this.view = new PIXI.Graphics()
 

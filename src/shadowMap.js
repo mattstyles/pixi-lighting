@@ -12,58 +12,64 @@ export default class ShadowMap {
 
   }
 
+  // Projects a vertex away from a light source
+  // currently assumes one light source and just applies a scalar
+  // should use a scalar based on inverse distance from source
+  // using unit clamps vertex length to the scalar value
+  project = vertex => {
+    //let scalar = 1 - ( vertex.distance( this.light.pos ) / this.light.distance )
+    return vertex
+      .sub( this.light.pos )
+      // .scalar( 1 + scalar )
+      .unit()
+      .scalar( 300 )
+      .add( this.light.pos )
+  }
+
+  // Returns a list of vertices describing the shadow region
+  region() {
+    var points = this.shape.filterVisible( this.light.pos )
+
+    let shadowRegion = []
+
+    // Apply visible points to front face of the polygon
+    points.forEach( point => shadowRegion.push( point ) )
+
+    // Add projected points, project backwards across array to add the winding
+    // we need to the resultant polygon
+    var i = points.length - 1
+    while ( i > -1 ) {
+      shadowRegion.push( this.project( points[ i ] ) )
+      i--
+    }
+
+    return shadowRegion
+  }
+
   render() {
 
-    function project( point ) {
-      return point
-        .sub( light.pos )
-        .scalar( 1.6 )
-        .add( light.pos )
-    }
+    var light = this.light
+    var points = this.shape.filterVisible( light.pos )
 
     this.view.clear()
 
-    var points = this.shape.points
-    var light = this.light
 
+    // Draw shadow region
     this.view.beginFill( 0x000000, .95 )
-
-    // let shadowRegion = points.map( project )
-    // shadowRegion = shadowRegion.concat( points )
-    //console.log( shadowRegion )
-    //this.view.drawPolygon( shadowRegion.map( point => new PIXI.Point( point.x, point.y ) ) )
-
-
-
-    // this.view.moveTo( 128, 128 )
-    // for ( var i = 1; i <= points.length; i++ ) {
-    //   let p = i % points.length
-    //   // let point = new Vector2({
-    //   //   head: {
-    //   //     x: points[ p ].x,
-    //   //     y: points[ p ].y
-    //   //   },
-    //   //   origin: {
-    //   //     x: light.pos.x,
-    //   //     y: light.pos.y
-    //   //   }
-    //   // })
-    //
-    //   // Project p by removing light origin, scaling and reapplying position
-    //   // mathutil should do this when given an origin
-    //   let point = points[ p ]
-    //   point = point.sub( this.light.pos )
-    //   point = point.scalar( 1.6 ).add( this.light.pos )
-    //
-    //   console.log( point.head.x, point.head.y, point.origin.x, point.origin.y )
-    //   this.view.lineTo( point.x, point.y )
-    // }
-
+    // convert to pixi.points for drawPolygon
+    this.view.drawPolygon( this.region().map( point => new PIXI.Point( point.x, point.y ) ) )
     this.view.endFill()
 
+    // Draw shadow over objects (due to vertex winding sometimes the shadowRegion
+    // will not include all points correctly from the shape)
+    this.view.beginFill( 0x000000, .95 )
+    this.view.drawPolygon( this.shape.points.map( point => new PIXI.Point( point.x, point.y ) ) )
+    this.view.endFill()
+
+    // Draw visible vertices
     this.view.beginFill( 0xffff22, 1 )
     this.shape.filterVisible( this.light.pos ).forEach( vertex => {
-      this.view.drawCircle( vertex.x, vertex.y, 4 )
+      this.view.drawCircle( vertex.x, vertex.y, 2 )
     })
     this.view.endFill()
   }
